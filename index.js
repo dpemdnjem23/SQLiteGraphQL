@@ -59,34 +59,59 @@ recipe.kcal,recipe.name, recipe.picture,recipe.servings,recipe.category
 //**************************************************
 import { ApolloServer, gql } from "apollo-server";
 
-
-
 const typeDefs = gql`
 
-type Recipe{
-  id:String!
-  cookingTime:Int!
-  cookingSteps:[String]!
-spices:[String]!
-description:String!
-name:String!
-picture:String!
-ingredients:[String]!
-servings:Int!
-category:String!
+
+
+type Recipe {
+  id: String!
+  cookingTime:Int
+  cookingSteps:[String]
+spices:[String]
+description:String
+name:String
+picture:String
+ingredients:[String]
+servings:Int
+category:String
 }
 
+input RecipeInput{
+  id: String!
+  cookingTime:Int
+  cookingSteps:[String]
+spices:[String]
+description:String
+name:String
+picture:String
+ingredients:[String]
+servings:Int
+category:String
+
+}
+
+
    type Query {
- recipes:[Recipe]
- recipeById(id: ID!): Recipe
-
-
+     Recipe:[Recipe]
+ recipes(category:String):[Recipe]
+ recipeById(id: String!): Recipe
 
    }
- 
- `;
-// / # TODO: Step 7 - Add RecipeInput input
 
+  
+    type Mutation {
+
+      AddRecipe(recipe:RecipeInput):Recipe
+     }
+
+
+
+ `;
+  
+ 
+
+// / # TODO: Step 7 - Add RecipeInput input
+//
 
 //   """
 //   Returns all recipes in a list, sorted by name ascending.
@@ -103,6 +128,7 @@ category:String!
 // }
 
 // type Mutation {
+  
 //   """
 //   Add a new recipe to the database, then return newly added recipe.
 //   Takes one argument 'recipeInput' of type RecipeInput for
@@ -112,17 +138,17 @@ category:String!
 // }
 const resolvers = {
 
-  Recipe:{
-    id:(parent,args) =>{
-      console.log(parent.id)
-      return parent.id
-    },
-    cookingTime:(parent,args) =>{
-      return parent.cookingTime
-    },
-    cookingSteps:(parent,args) =>{
-      return parent.cookingSteps
-    }
+  // Recipe:{
+  //   id:(parent,args) =>{
+  //     console.log(parent.id)
+  //     return parent.id
+  //   },
+  //   cookingTime:(parent,args) =>{
+  //     return parent.cookingTime
+  //   },
+  //   cookingSteps:(parent,args) =>{
+  //     return parent.cookingSteps
+  //   }
   // spices:[String]!
   // description:String!
   // name:String!
@@ -131,43 +157,92 @@ const resolvers = {
   // servings:Int!
   // category:String!
 
-  },
+  // },
 
+ 
 
   // TODO: Step 4 - Implement Recipe resolver if necessary
 
   Query: {
-    recipes: () =>recipes,
+Recipe:() => recipes,
+  
 
+    recipes: (parent,args,context,info) =>{
+      //name으로 sort하기
+      const categoryRecipe = recipes.filter((el)=>{
+        return el.category===args.category
+      })
+
+      categoryRecipe.sort((a,b)=>{
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0      
+
+      })
+  
+      //카테고리가 없는 경우
+      if(categoryRecipe.length===0){
+        recipes.sort((a,b)=>{
+          if (a.name < b.name) {
+            return -1;
+          }
+          if (a.name > b.name) {
+            return 1;
+          }
+          return 0      
+  
+        })
+
+
+        return recipes
+      }
+      //카테고리가 있는경우
+    return categoryRecipe
+
+    }
+,
     
 
 
     recipeById: (parent,args,context,info) => {
      
-    const byId =   recipes.find((recipe)=>recipe.id ===args.id)
+    const byId = recipes.find((recipe)=>recipe.id ===args.id)
+  
 
-    console.log(byId.id===args.id)
-      if(byId.id===args.id){
-        console.log
         return byId
-      }
-
-
       
+
+  
       // return 
 
 
     }
 
     },
-  
-    // TODO: Step 6 - Implement recipes resolver
-    // TODO: Step 5 - Implement recipeById resolver
-  // },
 
-  // Mutation: {
-  //   // TODO: Step 8 - Implement addRecipe resolver
-  // },
+    // TODO: Step 8 - Implement addRecipe resolver
+    Mutation: {
+      AddRecipe: (parent,args) =>{
+  
+      //  {id,cookingTime,cookingSteps,spices,description,name,picture,ingredients,savings,category}
+        const inputData = args.recipe
+        console.log(inputData)
+        recipes.push(inputData)
+        return inputData
+      }
+
+      
+// 
+    },
+
+
+
+
+
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
