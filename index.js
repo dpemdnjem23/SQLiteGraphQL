@@ -39,24 +39,13 @@ let db;
   //데이터를 넣는다.
   for (const recipe of recipes) {
 
-
-
 await db.run(`INSERT INTO recipe(id,cookingTime,cookingSteps,description,spices,ingredients,kcal,name,picture,servings,category) 
 VALUES (?,?,?,?,?,?,?,?,?,?,?)`,recipe.id, recipe.cookingTime,recipe.cookingSteps,recipe.description,recipe.spices,recipe.ingredients,
 recipe.kcal,recipe.name, recipe.picture,recipe.servings,recipe.category
 )
   }
 } )();
-// # TODO: Step 3 - Add Recipe type
 
-
-
-// }
-
-// recipe(id:ID!):Recipe
-//**************************************************
-// GRAPHQL SERVER IMPLEMENTATION
-//**************************************************
 import { ApolloServer, gql } from "apollo-server";
 
 const typeDefs = gql`
@@ -107,61 +96,10 @@ category:String
 
 
  `;
-  
- 
-
-// / # TODO: Step 7 - Add RecipeInput input
-//
-
-//   """
-//   Returns all recipes in a list, sorted by name ascending.
-//   If an optional argument 'category' is provided, 
-//   only return recipes with the specified category.
-//   """
-//   오름차순 정렬도니 목록의 모든 조리법을 반환
-//   category가 있다면 지정도니 카테코리의 레시피만 반환한다.
-
-//   #TODO: Step 6 - Add recipes query
-
-//   "Returns a recipe with provided ID"
-//   recipeById(recipeId: ID!): Recipe!
-// }
-
-// type Mutation {
-  
-//   """
-//   Add a new recipe to the database, then return newly added recipe.
-//   Takes one argument 'recipeInput' of type RecipeInput for
-//   the recipe. 
-//   """
-//   #TODO: Step 8 - Add addRecipe mutation
-// }
 const resolvers = {
 
-  // Recipe:{
-  //   id:(parent,args) =>{
-  //     console.log(parent.id)
-  //     return parent.id
-  //   },
-  //   cookingTime:(parent,args) =>{
-  //     return parent.cookingTime
-  //   },
-  //   cookingSteps:(parent,args) =>{
-  //     return parent.cookingSteps
-  //   }
-  // spices:[String]!
-  // description:String!
-  // name:String!
-  // picture:String!
-  // ingredients:[String]!
-  // servings:Int!
-  // category:String!
 
-  // },
 
- 
-
-  // TODO: Step 4 - Implement Recipe resolver if necessary
 
   Query: {
 Recipe:() => recipes,
@@ -216,19 +154,16 @@ Recipe:() => recipes,
         return byId
       
 
-  
-      // return 
 
 
     }
 
     },
 
-    // TODO: Step 8 - Implement addRecipe resolver
     Mutation: {
       AddRecipe: (parent,args) =>{
   
-      //  {id,cookingTime,cookingSteps,spices,description,name,picture,ingredients,savings,category}
+     
         const inputData = args.recipe
         console.log(inputData)
         recipes.push(inputData)
